@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package app.v1;
+
+import "google/protobuf/timestamp.proto";
+
+
+enum AccountStatus {
+    ACCOUNT_STATUS_UNSPECIFIED = 0;
+    ACCOUNT_STATUS_ACTIVE = 1;
+    ACCOUNT_STATUS_SUSPENDED = 2;
+    ACCOUNT_STATUS_DELETED = 3;
+}
+
+message Account {
+    string id = 1;
+    AccountStatus status = 2;
+    string email = 3;
+    string password = 4;
+    string api_key = 5;
+    reserved 6 to 9;
+
+    string first_name = 10;
+    string last_name = 11;
+
+    google.protobuf.Timestamp created_at = 20;
+    google.protobuf.Timestamp last_accessed_at = 21;
+    google.protobuf.Timestamp deleted_at = 22;
+}

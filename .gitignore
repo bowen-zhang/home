@@ -1,0 +1,7 @@
+.DS_Store
+**/node_modules
+**/__pycache__
+.venv
+protos/*.py*
+web/src/libs/*_pb.ts
+runtime

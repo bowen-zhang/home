@@ -1,0 +1,16 @@
+project_name: "bootstrap-app"
+env: "ENVIRONMENT_DEV"
+domain: "localhost"
+admin_email: ""
+observability: "OBSERVABILITY_LOCAL"
+api_service_settings:
+  hostname: "localhost"
+  port: 50001
+  jwt_settings:
+    secret: "[PLACEHOLDER]"
+    algorithm: "HS256"
+    access_token_expiration_seconds: 900        # 15 min
+    refresh_token_expiration_seconds: 604800    # 7 days
+storage_service_settings:
+  hostname: "localhost"
+  port: 50002

@@ -1,0 +1,81 @@
+services:
+  web-bootstrap:
+    container_name: web-bootstrap
+    profiles:
+      - bootstrap
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web-bootstrap
+    image: ${IMAGE_REGISTRY:-}web-bootstrap:${VERSION}
+    ports:
+      - "80:80"
+    volumes:
+      - ${RUNTIME_DIR:-./runtime}/data/certbot/www:/var/www/certbot:ro
+    restart: unless-stopped
+
+  web-staging:
+    container_name: web-staging
+    profiles:
+      - staging
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web-staging
+    image: ${IMAGE_REGISTRY:-}web-staging:${VERSION}
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - API_HOSTNAME=api
+      - API_PORT=50001
+    restart: unless-stopped
+  
+  web:
+    container_name: web
+    profiles:
+      - prod
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    image: ${IMAGE_REGISTRY:-}web:${VERSION}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${RUNTIME_DIR:-./runtime}/data/certbot/etc:/etc/letsencrypt:ro
+      - ${RUNTIME_DIR:-./runtime}/data/certbot/www:/var/www/certbot:ro
+    restart: unless-stopped
+
+  api:
+    container_name: api-service
+    profiles:
+      - prod
+      - staging
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    image: ${IMAGE_REGISTRY:-}api-service:${VERSION}
+    ports:
+      - "50001:50001"
+    environment:
+      - SETTINGS_FILE=${SETTINGS_FILE:-settings.prod.yaml}
+    volumes:
+      - ${RUNTIME_DIR:-./runtime}/config:/usr/local/app/runtime/config
+    restart: unless-stopped
+
+  storage:
+    container_name: storage-service
+    profiles:
+      - prod
+      - staging
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.storage
+    image: ${IMAGE_REGISTRY:-}storage-service:${VERSION}
+    ports:
+      - "50002:50002"
+    environment:
+      - SETTINGS_FILE=${SETTINGS_FILE:-settings.prod.yaml}
+    volumes:
+      - ${RUNTIME_DIR:-./runtime}/config:/usr/local/app/runtime/config
+      - ${RUNTIME_DIR:-./runtime}/db:/usr/local/app/runtime/db
+    restart: unless-stopped
